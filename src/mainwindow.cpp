@@ -28,15 +28,29 @@ ButtonOption Style(){
 void tui_init(){
     auto screen = ScreenInteractive::Fullscreen();
 
-    auto button = Container::Vertical({
+    std::string right_content = "welcome to use SerailTools";
+
+    auto menu = Container::Vertical({
         Button("Serial", [&]{}, Style()),
-        Button("tero", [&]{}, Style()),
+        Button("Tero", [&]{}, Style()),
     });
 
-
-    auto fullscreen_component = Renderer(button, [&]{
+    auto fullscreen_component = Renderer(menu, [&]{
         int terminal_width = screen.dimx();
-        int terminal_height = screen.dimy();
+
+        auto left_panel = menu->Render() | size(WIDTH, EQUAL, 20) | border;
+
+        auto right_panel = vbox({
+            text(right_content) | hcenter,
+        }) | border | flex;
+        
+        auto main_layout = hbox({
+            left_panel,
+            right_panel,
+        }) | borderEmpty;
+
+        return main_layout;
+    });
 
     //     auto top_info = hbox({
     //         text(" serial tools "),
@@ -60,23 +74,6 @@ void tui_init(){
     //     return content;
 
     // });
-
-    auto top_info = hbox(Elements{text(" serial tools ")});
-
-        auto content = vbox(Elements{
-            top_info,
-            separator(),
-            hbox(Elements{
-                button->Render(),
-                text("内容区域") | size(WIDTH, EQUAL, terminal_width)
-            }),
-            separator(),
-            // 如需重复渲染按钮可取消注释，通常不需要
-            // button->Render(),
-        }) | border;
-
-        return content;
-    });
 
     screen.Loop(fullscreen_component);
     // auto fullscreen_component = Renderer()
